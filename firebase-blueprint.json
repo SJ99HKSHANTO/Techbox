@@ -1,0 +1,137 @@
+{
+  "entities": {
+    "Post": {
+      "title": "Post",
+      "description": "Public blog posts readable by all visitors worldwide, created and managed exclusively by the admin.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the post"
+        },
+        "title": {
+          "type": "string",
+          "description": "Headline of the article"
+        },
+        "content": {
+          "type": "string",
+          "description": "Body paragraph content of the article"
+        },
+        "excerpt": {
+          "type": "string",
+          "description": "Short summary of the article"
+        },
+        "category": {
+          "type": "string",
+          "description": "Category or topic of the post"
+        },
+        "image": {
+          "type": "string",
+          "description": "Cover photo image URL"
+        },
+        "video": {
+          "type": "string",
+          "description": "Optional YouTube video URL"
+        },
+        "author": {
+          "type": "object",
+          "description": "Author details (name, avatar, email)"
+        },
+        "date": {
+          "type": "string",
+          "description": "Formatted publication date"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "ISO timestamp of creation"
+        },
+        "isPopular": {
+          "type": "boolean",
+          "description": "Flag for featured/popular posts"
+        },
+        "readTime": {
+          "type": "string",
+          "description": "Estimated reading time"
+        }
+      },
+      "required": ["title", "content"]
+    },
+    "User": {
+      "title": "User",
+      "description": "User profile records containing visitor login details.",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "description": "Firebase Auth UID"
+        },
+        "displayName": {
+          "type": "string",
+          "description": "User display name"
+        },
+        "email": {
+          "type": "string",
+          "description": "User email address"
+        },
+        "photoURL": {
+          "type": "string",
+          "description": "User profile avatar URL"
+        },
+        "role": {
+          "type": "string",
+          "description": "User role: admin or visitor"
+        },
+        "lastLoginAt": {
+          "type": "string",
+          "description": "ISO timestamp of last login"
+        }
+      },
+      "required": ["uid", "email"]
+    },
+    "VisitorLog": {
+      "title": "VisitorLog",
+      "description": "Audit record of users logging in to attempt posting or access features.",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "description": "Firebase Auth UID"
+        },
+        "email": {
+          "type": "string",
+          "description": "User email address"
+        },
+        "displayName": {
+          "type": "string",
+          "description": "User full name"
+        },
+        "photoURL": {
+          "type": "string",
+          "description": "User avatar"
+        },
+        "timestamp": {
+          "type": "string",
+          "description": "ISO timestamp of access"
+        },
+        "action": {
+          "type": "string",
+          "description": "Action performed (e.g. login_attempt, post_attempt)"
+        }
+      },
+      "required": ["uid", "email"]
+    }
+  },
+  "firestore": {
+    "collections": {
+      "posts": {
+        "entity": "Post",
+        "description": "Publicly readable blog posts across the globe."
+      },
+      "users": {
+        "entity": "User",
+        "description": "Registered and logged-in visitor profiles."
+      },
+      "visitor_logs": {
+        "entity": "VisitorLog",
+        "description": "Audit logs of visitor login attempts."
+      }
+    }
+  }
+}

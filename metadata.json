@@ -1,0 +1,6 @@
+{
+  "name": "Modern Blog Post Website",
+  "description": "A modern, responsive, and minimalist blog website built with pure HTML, CSS, and Vanilla JavaScript featuring multi-language worldwide translation, dark mode, category filtering, search, and article reader modal.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,810 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TechBlog | Modern Web & Technology Insights</title>
+    <meta name="description" content="A modern, responsive, and minimalist blog website featuring articles on web development, UI/UX design, artificial intelligence, and programming." />
+
+    <!-- Google Fonts (Plus Jakarta Sans) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <!-- Custom Stylesheet -->
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+
+    <!-- =========================================================================
+         0. Smart Browser Language Translation Banner
+         ========================================================================= -->
+    <div class="lang-detector-banner" id="langDetectorBanner" style="display: none;">
+      <div class="container lang-detector-container">
+        <div class="lang-detector-info">
+          <span class="lang-detector-icon">🌍</span>
+          <span id="langDetectorText">Detected your language. Translate website?</span>
+        </div>
+        <div class="lang-detector-actions">
+          <button class="btn-translate-confirm" id="btnTranslateConfirm">
+            <i class="fas fa-language"></i> Translate
+          </button>
+          <button class="btn-translate-dismiss" id="btnTranslateDismiss" aria-label="Dismiss">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- =========================================================================
+         1. Header & Navigation Bar
+         ========================================================================= -->
+    <header class="site-header" id="siteHeader">
+      <div class="container nav-container">
+        <!-- Brand Logo -->
+        <a href="#hero" class="site-logo" id="siteLogo">
+          <span class="logo-badge"><i class="fas fa-feather-alt"></i></span>
+          <span class="logo-text" data-i18n="brand_logo_text">Tech<span>Blog</span></span>
+        </a>
+
+        <!-- Desktop Navigation Links -->
+        <nav class="nav-menu" id="navMenu">
+          <a href="#hero" class="nav-link active" data-i18n="nav_home">Home</a>
+          <a href="#postsSection" class="nav-link" data-i18n="nav_posts">All Posts</a>
+          <a href="#categoriesWidget" class="nav-link" data-i18n="nav_categories">Categories</a>
+          <a href="#popularWidget" class="nav-link" data-i18n="nav_popular">Popular</a>
+          <a href="#newsletterWidget" class="nav-link" data-i18n="nav_newsletter">Newsletter</a>
+        </nav>
+
+        <!-- Action Buttons (Auth, Create Post, Language Switcher, Theme Switcher & Hamburger) -->
+        <div class="nav-actions">
+
+          <!-- Create Post Button -->
+          <button class="btn-create-post" id="btnOpenCreatePost" title="Write a new post" data-i18n-title="btn_write_post_title">
+            <i class="fas fa-pen-to-square"></i>
+            <span class="create-btn-text" data-i18n="btn_write_post">Write Post</span>
+          </button>
+
+          <!-- User Authentication & Profile Button (Google Auth / Profile) -->
+          <div class="auth-wrapper" id="authWrapper">
+            <button class="btn-auth" id="btnAuth" title="Sign in with Google" data-i18n-title="btn_sign_in_title">
+              <i class="fab fa-google"></i>
+              <span id="authBtnText" data-i18n="btn_sign_in">Sign In</span>
+            </button>
+
+            <!-- Profile Dropdown Menu -->
+            <div class="user-dropdown-menu" id="userDropdownMenu">
+              <div class="user-dropdown-header">
+                <img src="" id="userDropdownAvatar" class="user-avatar-circle" alt="User" />
+                <div class="user-info-text">
+                  <h4 id="userDropdownName">User</h4>
+                  <p id="userDropdownEmail">user@example.com</p>
+                  <span id="userRoleBadge" class="user-role-badge">Reader</span>
+                </div>
+              </div>
+              <div class="user-dropdown-actions">
+                <button class="dropdown-item-btn admin-only-feature" id="btnOpenVisitorsModal" style="display: none;">
+                  <i class="fas fa-users-cog"></i> <span data-i18n="menu_visitors">👥 Logged-in Visitors List</span>
+                </button>
+                <button class="dropdown-item-btn" id="btnLogout">
+                  <i class="fas fa-sign-out-alt"></i> <span data-i18n="btn_sign_out">Sign Out</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Global Language Switcher Dropdown -->
+          <div class="lang-switcher-wrapper" id="langSwitcherWrapper">
+            <button class="lang-dropdown-btn" id="langDropdownBtn" aria-expanded="false" aria-label="Change Language">
+              <i class="fas fa-globe"></i>
+              <span class="current-lang-text" id="currentLangLabel">English</span>
+              <i class="fas fa-chevron-down lang-caret"></i>
+            </button>
+
+            <!-- Language Dropdown Menu -->
+            <div class="lang-dropdown-menu" id="langDropdownMenu">
+              <div class="lang-dropdown-header">
+                <span><i class="fas fa-language"></i> <span data-i18n="select_language">Select Language</span></span>
+              </div>
+              
+              <!-- Quick Search Input -->
+              <div class="lang-search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="langSearchInput" placeholder="Search language..." data-i18n-placeholder="search_language_ph" />
+              </div>
+
+              <!-- Popular Languages List -->
+              <div class="lang-options-list" id="langOptionsList">
+                <button class="lang-option-btn active" data-lang="en" data-name="English">
+                  <span class="lang-flag">🇺🇸</span>
+                  <span class="lang-name">English</span>
+                  <span class="lang-en-name">(English)</span>
+                </button>
+                <button class="lang-option-btn" data-lang="bn" data-name="Bengali">
+                  <span class="lang-flag">🇧🇩</span>
+                  <span class="lang-name">বাংলা</span>
+                  <span class="lang-en-name">(Bengali)</span>
+                </button>
+                <button class="lang-option-btn" data-lang="es" data-name="Spanish">
+                  <span class="lang-flag">🇪🇸</span>
+                  <span class="lang-name">Español</span>
+                  <span class="lang-en-name">(Spanish)</span>
+                </button>
+                <button class="lang-option-btn" data-lang="ar" data-name="Arabic">
+                  <span class="lang-flag">🇸🇦</span>
+                  <span class="lang-name">العربية</span>
+                  <span class="lang-en-name">(Arabic)</span>
+                </button>
+                <button class="lang-option-btn" data-lang="hi" data-name="Hindi">
+                  <span class="lang-flag">🇮🇳</span>
+                  <span class="lang-name">हिन्दी</span>
+                  <span class="lang-en-name">(Hindi)</span>
+                </button>
+                <button class="lang-option-btn" data-lang="fr" data-name="French">
+                  <span class="lang-flag">🇫🇷</span>
+                  <span class="lang-name">Français</span>
+                  <span class="lang-en-name">(French)</span>
+                </button>
+                <button class="lang-option-btn" data-lang="de" data-name="German">
+                  <span class="lang-flag">🇩🇪</span>
+                  <span class="lang-name">Deutsch</span>
+                  <span class="lang-en-name">(German)</span>
+                </button>
+                <button class="lang-option-btn" data-lang="zh-CN" data-name="Chinese">
+                  <span class="lang-flag">🇨🇳</span>
+                  <span class="lang-name">中文</span>
+                  <span class="lang-en-name">(Chinese)</span>
+                </button>
+                <button class="lang-option-btn" data-lang="ja" data-name="Japanese">
+                  <span class="lang-flag">🇯🇵</span>
+                  <span class="lang-name">日本語</span>
+                  <span class="lang-en-name">(Japanese)</span>
+                </button>
+                <button class="lang-option-btn" data-lang="ru" data-name="Russian">
+                  <span class="lang-flag">🇷🇺</span>
+                  <span class="lang-name">Русский</span>
+                  <span class="lang-en-name">(Russian)</span>
+                </button>
+                <button class="lang-option-btn" data-lang="pt" data-name="Portuguese">
+                  <span class="lang-flag">🇧🇷</span>
+                  <span class="lang-name">Português</span>
+                  <span class="lang-en-name">(Portuguese)</span>
+                </button>
+                <button class="lang-option-btn" data-lang="tr" data-name="Turkish">
+                  <span class="lang-flag">🇹🇷</span>
+                  <span class="lang-name">Türkçe</span>
+                  <span class="lang-en-name">(Turkish)</span>
+                </button>
+                <button class="lang-option-btn" data-lang="it" data-name="Italian">
+                  <span class="lang-flag">🇮🇹</span>
+                  <span class="lang-name">Italiano</span>
+                  <span class="lang-en-name">(Italian)</span>
+                </button>
+                <button class="lang-option-btn" data-lang="ko" data-name="Korean">
+                  <span class="lang-flag">🇰🇷</span>
+                  <span class="lang-name">한국어</span>
+                  <span class="lang-en-name">(Korean)</span>
+                </button>
+                <button class="lang-option-btn" data-lang="ur" data-name="Urdu">
+                  <span class="lang-flag">🇵🇰</span>
+                  <span class="lang-name">اردو</span>
+                  <span class="lang-en-name">(Urdu)</span>
+                </button>
+                <button class="lang-option-btn" data-lang="id" data-name="Indonesian">
+                  <span class="lang-flag">🇮🇩</span>
+                  <span class="lang-name">Bahasa Indonesia</span>
+                  <span class="lang-en-name">(Indonesian)</span>
+                </button>
+                <button class="lang-option-btn" data-lang="vi" data-name="Vietnamese">
+                  <span class="lang-flag">🇻🇳</span>
+                  <span class="lang-name">Tiếng Việt</span>
+                  <span class="lang-en-name">(Vietnamese)</span>
+                </button>
+              </div>
+
+              <!-- Official Google Translate Element (For 100+ Global Languages) -->
+              <div class="google-translate-container">
+                <div class="google-translate-title">
+                  <i class="fab fa-google"></i> More languages:
+                </div>
+                <div id="google_translate_element"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dark/Light Mode Toggle Button -->
+          <button class="theme-toggle-btn" id="themeToggleBtn" aria-label="Toggle Theme" title="Switch to Dark Mode">
+            <i class="fas fa-moon" id="themeIcon"></i>
+          </button>
+
+          <!-- Mobile Hamburger Button -->
+          <button class="hamburger-btn" id="hamburgerBtn" aria-label="Toggle Navigation Menu">
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- =========================================================================
+         2. Hero Section
+         ========================================================================= -->
+    <section class="hero-section" id="hero">
+      <div class="container">
+        <div class="hero-content">
+          <div class="hero-pill">
+            <i class="fas fa-bolt"></i> <span data-i18n="hero_pill">Welcome to Modern Tech Insights</span>
+          </div>
+          <h1 class="hero-title" data-i18n="hero_title">
+            The Frontier of <span class="gradient-text">Tech, Design & Code</span>
+          </h1>
+          <p class="hero-subtitle" data-i18n="hero_subtitle">
+            Explore web development, UI/UX design, artificial intelligence, and programming best practices crafted for developers and creators.
+          </p>
+
+          <!-- Quick Category Filter Chips -->
+          <div class="hero-categories" id="heroCategories">
+            <button class="category-chip active" data-category="all" id="chipAll">
+              <i class="fas fa-layer-group"></i> <span data-i18n="cat_all_topics">All Topics</span>
+            </button>
+            <button class="category-chip" data-category="Web Development" id="chipWebDev">
+              <i class="fas fa-code"></i> <span data-i18n="cat_webdev">Web Development</span>
+            </button>
+            <button class="category-chip" data-category="Design" id="chipDesign">
+              <i class="fas fa-palette"></i> <span data-i18n="cat_design">Design</span>
+            </button>
+            <button class="category-chip" data-category="AI & Tech" id="chipAI">
+              <i class="fas fa-robot"></i> <span data-i18n="cat_ai">AI & Tech</span>
+            </button>
+            <button class="category-chip" data-category="Programming" id="chipProg">
+              <i class="fas fa-terminal"></i> <span data-i18n="cat_prog">Programming</span>
+            </button>
+            <button class="category-chip" data-category="Tutorial" id="chipTutorial">
+              <i class="fas fa-graduation-cap"></i> <span data-i18n="cat_tutorial">Tutorials</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         3. Main Content Grid & Sidebar Layout
+         ========================================================================= -->
+    <main class="main-layout" id="postsSection">
+      <div class="container">
+        <div class="content-grid">
+
+          <!-- Left Column: Blog Posts Grid -->
+          <section class="posts-column" id="postsColumn">
+            <!-- Filter & Results Count Bar -->
+            <div class="results-bar">
+              <h2 class="results-title" id="resultsTitle" data-i18n="latest_articles">Latest Articles</h2>
+              <div class="results-actions">
+                <span class="results-count" id="resultsCount">Total Posts: 6</span>
+                <button class="btn-write-post-inline" id="btnOpenCreatePost2" title="Publish a new post" data-i18n-title="btn_write_post_title">
+                  <i class="fas fa-plus"></i> <span data-i18n="btn_write_post">Write Post</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Dynamic Blog Post Grid -->
+            <div class="blog-grid" id="blogGrid">
+              <!-- Rendered dynamically by JavaScript -->
+            </div>
+          </section>
+
+          <!-- Right Column: Sidebar & Widgets -->
+          <aside class="sidebar" id="sidebar">
+
+            <!-- Widget 1: Dynamic Search Bar -->
+            <div class="sidebar-widget search-widget" id="searchWidget">
+              <h3 class="widget-title">
+                <i class="fas fa-search"></i> <span data-i18n="widget_search_title">Search Blog</span>
+              </h3>
+              <div class="search-form">
+                <i class="fas fa-search search-icon"></i>
+                <input 
+                  type="text" 
+                  id="searchInput" 
+                  class="search-input" 
+                  placeholder="Search articles by title or topic..." 
+                  data-i18n-placeholder="search_placeholder"
+                  autocomplete="off"
+                />
+                <button class="search-clear-btn" id="searchClearBtn" title="Clear Search">
+                  <i class="fas fa-times"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- Widget 2: Categories List -->
+            <div class="sidebar-widget categories-widget" id="categoriesWidget">
+              <h3 class="widget-title">
+                <i class="fas fa-folder-open"></i> <span data-i18n="widget_categories_title">Categories</span>
+              </h3>
+              <div class="category-list" id="categoryList">
+                <div class="category-item active" data-category="all" id="catItemAll">
+                  <span><i class="fas fa-chevron-right"></i> <span data-i18n="cat_all_categories">All Categories</span></span>
+                  <span class="category-count">6</span>
+                </div>
+                <div class="category-item" data-category="Web Development" id="catItemWebDev">
+                  <span><i class="fas fa-chevron-right"></i> <span data-i18n="cat_webdev">Web Development</span></span>
+                  <span class="category-count">1</span>
+                </div>
+                <div class="category-item" data-category="Design" id="catItemDesign">
+                  <span><i class="fas fa-chevron-right"></i> <span data-i18n="cat_design">Design</span></span>
+                  <span class="category-count">2</span>
+                </div>
+                <div class="category-item" data-category="AI & Tech" id="catItemAI">
+                  <span><i class="fas fa-chevron-right"></i> <span data-i18n="cat_ai">AI & Tech</span></span>
+                  <span class="category-count">1</span>
+                </div>
+                <div class="category-item" data-category="Programming" id="catItemProg">
+                  <span><i class="fas fa-chevron-right"></i> <span data-i18n="cat_prog">Programming</span></span>
+                  <span class="category-count">1</span>
+                </div>
+                <div class="category-item" data-category="Tutorial" id="catItemTutorial">
+                  <span><i class="fas fa-chevron-right"></i> <span data-i18n="cat_tutorial">Tutorial</span></span>
+                  <span class="category-count">1</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Widget 3: Popular Posts -->
+            <div class="sidebar-widget popular-widget" id="popularWidget">
+              <h3 class="widget-title">
+                <i class="fas fa-fire"></i> <span data-i18n="widget_popular_title">Popular Posts</span>
+              </h3>
+              <div class="popular-posts-list" id="popularPostsList">
+                <!-- Generated dynamically -->
+              </div>
+            </div>
+
+            <!-- Widget 4: Popular Tags -->
+            <div class="sidebar-widget tags-widget" id="tagsWidget">
+              <h3 class="widget-title">
+                <i class="fas fa-tags"></i> <span data-i18n="widget_tags_title">Popular Tags</span>
+              </h3>
+              <div class="tags-cloud">
+                <span class="tag-badge">#HTML5</span>
+                <span class="tag-badge">#CSS3</span>
+                <span class="tag-badge">#JavaScript</span>
+                <span class="tag-badge">#Responsive</span>
+                <span class="tag-badge">#AI</span>
+                <span class="tag-badge">#Frontend</span>
+                <span class="tag-badge">#WebDev</span>
+                <span class="tag-badge">#UI/UX</span>
+              </div>
+            </div>
+
+            <!-- Widget 5: Newsletter Subscription -->
+            <div class="sidebar-widget newsletter-widget" id="newsletterWidget">
+              <h3 class="widget-title">
+                <i class="fas fa-paper-plane"></i> <span data-i18n="widget_newsletter_title">Newsletter</span>
+              </h3>
+              <p class="newsletter-text" data-i18n="newsletter_description">Subscribe to get weekly article updates and curated tech insights delivered straight to your inbox.</p>
+              <form class="newsletter-form" id="newsletterForm">
+                <input 
+                  type="email" 
+                  class="newsletter-input" 
+                  id="newsletterEmail" 
+                  placeholder="Enter your email address..." 
+                  data-i18n-placeholder="newsletter_placeholder"
+                  required 
+                />
+                <button type="submit" class="newsletter-btn" id="newsletterBtn">
+                  <i class="fas fa-bell"></i> <span data-i18n="btn_subscribe">Subscribe</span>
+                </button>
+              </form>
+              <div class="newsletter-msg" id="newsletterMsg"></div>
+            </div>
+
+          </aside>
+        </div>
+      </div>
+    </main>
+
+    <!-- =========================================================================
+         4. Article Reader Modal
+         ========================================================================= -->
+    <div class="modal-overlay" id="articleModal" role="dialog" aria-modal="true">
+      <div class="modal-container">
+        <!-- Close Button -->
+        <button class="modal-close-btn" id="modalCloseBtn" aria-label="Close modal">
+          <i class="fas fa-times"></i>
+        </button>
+
+        <!-- Modal Hero Image -->
+        <img src="" alt="" class="modal-hero-img" id="modalHeroImg" />
+
+        <!-- Modal Body -->
+        <div class="modal-body">
+          <span class="modal-category-badge" id="modalCategoryBadge">Category</span>
+          <h2 class="modal-title" id="modalTitle">Article Title</h2>
+
+          <div class="modal-meta">
+            <span id="modalMetaAuthor"><i class="fas fa-user-edit"></i> Author</span>
+            <span id="modalMetaDate"><i class="far fa-calendar-alt"></i> Date</span>
+            <span id="modalMetaRead"><i class="far fa-clock"></i> Read Time</span>
+          </div>
+
+          <div class="modal-content-text" id="modalContentText">
+            <!-- Full article content -->
+          </div>
+
+          <div class="modal-share-bar">
+            <span style="font-weight: 600; color: var(--text-primary);">
+              <i class="fas fa-share-alt"></i> <span data-i18n="modal_share_title">Share this article:</span>
+            </span>
+            <div class="modal-share-icons">
+              <button class="share-btn" id="modalShareCopy">
+                <i class="fas fa-link"></i> <span data-i18n="modal_copy_link">Copy Link</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- =========================================================================
+         4.1 Create & Publish New Post Modal
+         ========================================================================= -->
+    <div class="create-modal-backdrop" id="createPostModal">
+      <div class="create-modal-container">
+        <!-- Header -->
+        <div class="create-modal-header">
+          <div class="create-modal-title">
+            <span class="modal-badge-icon"><i class="fas fa-newspaper"></i></span>
+            <div>
+              <h3 data-i18n="modal_publish_title">Publish a New Article</h3>
+              <p data-i18n="modal_publish_subtitle">Easily format with titles, cover images, YouTube videos, and rich paragraphs</p>
+            </div>
+          </div>
+          <button class="modal-close-btn" id="closeCreatePostBtn" aria-label="Close">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+
+        <!-- Form Body -->
+        <form id="createPostForm" class="create-post-form">
+          <div class="form-grid">
+            <!-- Headline / Title -->
+            <div class="form-group full-width">
+              <label for="postInputTitle" class="form-label required">
+                <i class="fas fa-heading"></i> <span data-i18n="form_headline_label">Article Headline / Title</span>
+              </label>
+              <input 
+                type="text" 
+                id="postInputTitle" 
+                class="form-input form-input-lg" 
+                placeholder="Enter an engaging headline..." 
+                data-i18n-placeholder="form_headline_placeholder"
+                required 
+              />
+            </div>
+
+            <!-- Category & Author Name -->
+            <div class="form-group">
+              <label for="postInputCategory" class="form-label">
+                <i class="fas fa-folder-open"></i> <span data-i18n="form_category_label">Category</span>
+              </label>
+              <select id="postInputCategory" class="form-input">
+                <option value="Web Development" data-i18n="cat_webdev">Web Development</option>
+                <option value="Design" data-i18n="cat_design">Design</option>
+                <option value="AI & Tech" data-i18n="cat_ai">AI & Tech</option>
+                <option value="Programming" data-i18n="cat_prog">Programming</option>
+                <option value="Tutorial" data-i18n="cat_tutorial">Tutorial</option>
+                <option value="News" data-i18n="cat_news">News & Updates</option>
+                <option value="Lifestyle" data-i18n="cat_lifestyle">Lifestyle</option>
+                <option value="General" data-i18n="cat_general">General</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="postInputAuthor" class="form-label">
+                <i class="fas fa-user-edit"></i> <span data-i18n="form_author_label">Author Name (Optional)</span>
+              </label>
+              <input 
+                type="text" 
+                id="postInputAuthor" 
+                class="form-input" 
+                placeholder="e.g. Shanto Ray / Staff Writer (Default: Author)" 
+                data-i18n-placeholder="form_author_placeholder"
+              />
+            </div>
+
+            <!-- Cover Image URL -->
+            <div class="form-group full-width">
+              <label for="postInputImage" class="form-label">
+                <i class="fas fa-image"></i> <span data-i18n="form_cover_img_label">Cover Image URL (Optional)</span>
+              </label>
+              <div class="input-with-presets">
+                <input 
+                  type="url" 
+                  id="postInputImage" 
+                  class="form-input" 
+                  placeholder="https://images.unsplash.com/... (Leave blank for default image)" 
+                  data-i18n-placeholder="form_cover_img_placeholder"
+                />
+                <div class="quick-image-presets">
+                  <span class="preset-label" data-i18n="sample_presets">Sample Presets:</span>
+                  <button type="button" class="preset-chip" data-img="https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800&auto=format&fit=crop&q=80">💻 Coding</button>
+                  <button type="button" class="preset-chip" data-img="https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800&auto=format&fit=crop&q=80">📰 News</button>
+                  <button type="button" class="preset-chip" data-img="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&auto=format&fit=crop&q=80">🤖 AI & Tech</button>
+                  <button type="button" class="preset-chip" data-img="https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?w=800&auto=format&fit=crop&q=80">🎨 Design</button>
+                </div>
+              </div>
+              <!-- Preview Box -->
+              <div id="imagePreviewContainer" class="image-preview-box" style="display: none;">
+                <img id="imagePreview" src="" alt="Preview" />
+                <button type="button" id="btnRemovePreview" class="btn-remove-preview"><i class="fas fa-times"></i> <span data-i18n="btn_remove_img">Remove Image</span></button>
+              </div>
+            </div>
+
+            <!-- YouTube Video URL -->
+            <div class="form-group full-width">
+              <label for="postInputVideo" class="form-label">
+                <i class="fab fa-youtube" style="color: #ef4444;"></i> <span data-i18n="form_video_label">YouTube Video Link (Optional)</span>
+              </label>
+              <input 
+                type="url" 
+                id="postInputVideo" 
+                class="form-input" 
+                placeholder="e.g. https://www.youtube.com/watch?v=dQw4w9WgXcQ (Auto-embeds player)" 
+                data-i18n-placeholder="form_video_placeholder"
+              />
+            </div>
+
+            <!-- Short Excerpt -->
+            <div class="form-group full-width">
+              <label for="postInputExcerpt" class="form-label">
+                <i class="fas fa-quote-left"></i> <span data-i18n="form_excerpt_label">Short Excerpt (Optional)</span>
+              </label>
+              <textarea 
+                id="postInputExcerpt" 
+                class="form-input" 
+                rows="2" 
+                placeholder="1-2 sentence introduction for card previews (Leave blank to auto-generate)..."
+                data-i18n-placeholder="form_excerpt_placeholder"
+              ></textarea>
+            </div>
+
+            <!-- Full Article Content -->
+            <div class="form-group full-width">
+              <div class="content-editor-label-bar">
+                <label for="postInputContent" class="form-label required">
+                  <i class="fas fa-align-left"></i> <span data-i18n="form_content_label">Article Content / Paragraphs</span>
+                </label>
+                <div class="editor-quick-tools">
+                  <button type="button" class="tool-btn" id="toolBold" title="Bold"><i class="fas fa-bold"></i></button>
+                  <button type="button" class="tool-btn" id="toolItalic" title="Italic"><i class="fas fa-italic"></i></button>
+                  <button type="button" class="tool-btn" id="toolQuote" title="Blockquote"><i class="fas fa-quote-right"></i></button>
+                  <button type="button" class="tool-btn" id="toolHeading" title="Sub-heading"><i class="fas fa-heading"></i></button>
+                  <button type="button" class="tool-btn" id="toolList" title="Bullet List"><i class="fas fa-list-ul"></i></button>
+                </div>
+              </div>
+              <textarea 
+                id="postInputContent" 
+                class="form-input form-textarea-large" 
+                rows="6" 
+                placeholder="Write your complete article here. Press Enter to start new paragraphs..." 
+                data-i18n-placeholder="form_content_placeholder"
+                required
+              ></textarea>
+              <small class="form-hint"><i class="fas fa-info-circle"></i> <span data-i18n="form_content_hint">Standard plain text will be automatically formatted into clean paragraphs.</span></small>
+            </div>
+
+            <!-- Popular Feature Checkbox -->
+            <div class="form-group full-width popular-checkbox-group">
+              <label class="custom-checkbox">
+                <input type="checkbox" id="postInputPopular" />
+                <span class="checkmark"></span>
+                <span><i class="fas fa-fire" style="color: #f59e0b;"></i> <span data-i18n="feature_popular">Feature in <strong>Popular Posts</strong> sidebar list</span></span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Footer Actions -->
+          <div class="create-modal-footer">
+            <button type="button" class="btn-modal-cancel" id="btnCancelCreatePost" data-i18n="btn_cancel">Cancel</button>
+            <button type="submit" class="btn-modal-submit" id="btnSubmitCreatePost">
+              <i class="fas fa-paper-plane"></i> <span data-i18n="btn_publish_post">Publish Post</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- =========================================================================
+         4.2 Logged-in Visitors Log Modal (Admin Only)
+         ========================================================================= -->
+    <div class="create-modal-backdrop" id="visitorsModal">
+      <div class="create-modal-container visitors-modal-container">
+        <div class="create-modal-header">
+          <div class="create-modal-title">
+            <span class="modal-badge-icon" style="background: linear-gradient(135deg, #10b981, #059669);"><i class="fas fa-users"></i></span>
+            <div>
+              <h3 data-i18n="modal_visitors_title">Logged-in Readers & Visitors Directory</h3>
+              <p data-i18n="modal_visitors_subtitle">Real-time audit log of registered users and readers signed in with Google</p>
+            </div>
+          </div>
+          <button class="modal-close-btn" id="closeVisitorsModalBtn" aria-label="Close">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+
+        <div class="visitors-list-body">
+          <div class="visitors-stats-bar">
+            <span><span data-i18n="total_registered_readers">Total Registered Readers:</span> <strong id="totalVisitorsCount">0</strong></span>
+            <button class="btn-refresh-visitors" id="btnRefreshVisitors"><i class="fas fa-sync-alt"></i> <span data-i18n="btn_refresh">Refresh</span></button>
+          </div>
+          <div class="visitors-table-wrapper">
+            <table class="visitors-table">
+              <thead>
+                <tr>
+                  <th data-i18n="th_profile">Profile</th>
+                  <th data-i18n="th_name">Name</th>
+                  <th data-i18n="th_email">Email</th>
+                  <th data-i18n="th_role">Role</th>
+                  <th data-i18n="th_last_signin">Last Signed In</th>
+                </tr>
+              </thead>
+              <tbody id="visitorsTableBody">
+                <tr>
+                  <td colspan="5" style="text-align:center; padding: 2rem;" data-i18n="loading_visitors">Loading visitor records...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- =========================================================================
+         4.3 Access Restriction & Security Notice Modal
+         ========================================================================= -->
+    <div class="create-modal-backdrop" id="accessDeniedModal">
+      <div class="create-modal-container access-denied-container">
+        <div class="create-modal-header">
+          <div class="create-modal-title">
+            <span class="modal-badge-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);"><i class="fas fa-shield-alt"></i></span>
+            <div>
+              <h3 data-i18n="modal_security_title">Security & Editorial Policy</h3>
+              <p data-i18n="modal_security_subtitle">Publishing privileges and author access</p>
+            </div>
+          </div>
+          <button class="modal-close-btn" id="closeAccessDeniedBtn" aria-label="Close">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+
+        <div class="access-denied-body">
+          <div class="security-status-box">
+            <i class="fas fa-user-check security-icon"></i>
+            <div>
+              <h4 data-i18n="security_signed_in_h4">Signed In Successfully!</h4>
+              <p><span data-i18n="security_signed_in_p">Your profile information (Name: <strong id="loggedVisitorName">...</strong>, Email: <strong id="loggedVisitorEmail">...</strong>) has been securely registered in the readers directory.</span></p>
+            </div>
+          </div>
+
+          <div class="security-notice-message">
+            <i class="fas fa-exclamation-triangle"></i>
+            <p>
+              <strong data-i18n="please_note">Please Note:</strong> <span data-i18n="editorial_policy_text">In accordance with our editorial policy and spam prevention standards, direct live publishing privileges are exclusively reserved for the Editor-in-Chief (<strong>shantoray049@gmail.com</strong>).</span>
+            </p>
+          </div>
+
+          <p class="security-footer-note" data-i18n="guest_editorial_note">
+            If you would like to contribute an article or guest editorial, please get in touch with the Editor-in-Chief. Thank you for your support!
+          </p>
+
+          <div class="access-denied-actions">
+            <button class="btn-modal-submit" id="btnOkAccessDenied" style="width: 100%; justify-content: center;">
+              <i class="fas fa-check"></i> <span data-i18n="btn_understood">Understood, Thanks</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- =========================================================================
+         5. Back to Top Floating Button
+         ========================================================================= -->
+    <button class="back-to-top" id="backToTopBtn" aria-label="Back to top" title="Back to top" data-i18n-title="back_to_top">
+      <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <!-- =========================================================================
+         6. Footer Section
+         ========================================================================= -->
+    <footer class="site-footer" id="siteFooter">
+      <div class="container">
+        <div class="footer-grid">
+          <!-- Column 1: Brand Info -->
+          <div class="footer-brand">
+            <a href="#hero" class="site-logo">
+              <span class="logo-badge"><i class="fas fa-feather-alt"></i></span>
+              <span class="logo-text" data-i18n="brand_logo_text">Tech<span>Blog</span></span>
+            </a>
+            <p data-i18n="footer_brand_desc">
+              An open technology and design blog providing insights on modern web technologies, frontend engineering, and programming careers.
+            </p>
+            <div class="footer-social-links">
+              <a href="#" class="social-icon-link" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+              <a href="#" class="social-icon-link" aria-label="Twitter"><i class="fab fa-x-twitter"></i></a>
+              <a href="#" class="social-icon-link" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+              <a href="#" class="social-icon-link" aria-label="GitHub"><i class="fab fa-github"></i></a>
+            </div>
+          </div>
+
+          <!-- Column 2: Quick Links -->
+          <div class="footer-col">
+            <h4 class="footer-col-title" data-i18n="footer_quick_links">Quick Links</h4>
+            <div class="footer-links">
+              <a href="#hero" class="footer-link" data-i18n="nav_home">Home</a>
+              <a href="#postsSection" class="footer-link" data-i18n="latest_articles">Latest Articles</a>
+              <a href="#popularWidget" class="footer-link" data-i18n="widget_popular_title">Popular Posts</a>
+              <a href="#newsletterWidget" class="footer-link" data-i18n="widget_newsletter_title">Newsletter</a>
+            </div>
+          </div>
+
+          <!-- Column 3: Categories -->
+          <div class="footer-col">
+            <h4 class="footer-col-title" data-i18n="footer_explore_topics">Explore Topics</h4>
+            <div class="footer-links">
+              <a href="#postsSection" class="footer-link" data-i18n="cat_webdev">Web Development</a>
+              <a href="#postsSection" class="footer-link" data-i18n="cat_design">UI & UX Design</a>
+              <a href="#postsSection" class="footer-link" data-i18n="cat_ai">Artificial Intelligence</a>
+              <a href="#postsSection" class="footer-link" data-i18n="cat_prog">Programming Guides</a>
+            </div>
+          </div>
+
+          <!-- Column 4: Info & Support -->
+          <div class="footer-col">
+            <h4 class="footer-col-title" data-i18n="footer_about_policies">About & Policies</h4>
+            <div class="footer-links">
+              <a href="#" class="footer-link" data-i18n="footer_about_us">About Us</a>
+              <a href="#" class="footer-link" data-i18n="footer_contact">Contact</a>
+              <a href="#" class="footer-link" data-i18n="footer_privacy">Privacy Policy</a>
+              <a href="#" class="footer-link" data-i18n="footer_terms">Terms of Service</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer Copyright Bar -->
+        <div class="footer-bottom">
+          <p data-i18n="footer_copyright">&copy; 2026 TechBlog. All rights reserved.</p>
+          <p data-i18n="footer_tech_stack">Built with modern HTML, CSS & JavaScript.</p>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Official Google Translate Element Script -->
+    <script type="text/javascript">
+      function googleTranslateElementInit() {
+        if (window.google && window.google.translate && window.google.translate.TranslateElement) {
+          new window.google.translate.TranslateElement(
+            {
+              pageLanguage: 'en',
+              includedLanguages: 'af,sq,am,ar,hy,az,eu,be,bn,bs,bg,ca,ceb,ny,zh-CN,zh-TW,co,hr,cs,da,nl,en,eo,et,tl,fi,fr,fy,gl,ka,de,el,gu,ht,ha,haw,iw,hi,hmn,hu,is,ig,id,ga,it,ja,jw,kn,kk,km,rw,ko,ku,ky,lo,la,lv,lt,lb,mk,mg,ms,ml,mt,mi,mr,mn,my,ne,no,or,ps,fa,pl,pt,pa,ro,ru,sm,gd,sr,st,sn,sd,si,sk,sl,so,es,su,sw,sv,tg,ta,tt,te,th,tr,tk,uk,ur,ug,uz,vi,cy,xh,yi,yo,zu',
+              layout: window.google.translate.TranslateElement.InlineLayout.SIMPLE,
+              autoDisplay: false
+            },
+            'google_translate_element'
+          );
+        }
+      }
+    </script>
+    <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+    <!-- Custom JavaScript Module -->
+    <script type="module" src="./script.js"></script>
+  </body>
+</html>
