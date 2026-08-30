@@ -29,13 +29,13 @@ import { uiTranslations, localizedBlogPosts } from "./translations.js";
 // 0. Firebase Cloud Database & Authentication Configuration
 // --------------------------------------------------------------------------
 const firebaseConfig = {
-  apiKey: "AIzaSyDeygxYxcj89hqJHj_BfI9NDAUA7fuJark",
-  authDomain: "singular-weaver-hx4wp.firebaseapp.com",
-  projectId: "singular-weaver-hx4wp",
+  apiKey: "AIzaSyBWF8mcIZynDBbYOju0GhwsRCgaK-AGkBI",
+  authDomain: "my-techbox.firebaseapp.com",
+  projectId: "my-techbox",
   firestoreDatabaseId: "ai-studio-modernblogpostwe-82e57f45-b486-4075-b803-6a766bb9bdab",
-  storageBucket: "singular-weaver-hx4wp.firebasestorage.app",
-  messagingSenderId: "700297471520",
-  appId: "1:700297471520:web:53b3bd417fcec642c5fe45"
+  storageBucket: "my-techbox.firebasestorage.app",
+  messagingSenderId: "793514793349",
+  appId: "1:793514793349:web:298e6eb0c7ca1400da0cec"
 };
 
 const app = initializeApp(firebaseConfig);
