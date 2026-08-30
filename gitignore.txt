@@ -1,1 +1,2 @@
 *search/index.json linguist-generated
+bootstrap.min.css -linguist-generated
