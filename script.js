@@ -1275,13 +1275,13 @@ document.addEventListener("DOMContentLoaded", () => {
       if (err.code === "auth/popup-closed-by-user") {
         showToast("Sign-in popup was closed.");
       } else if (err.code === "auth/popup-blocked") {
-        showToast("Popup was blocked by your browser. Please allow popups for this site.", true);
+        showToast("পপ-আপ ব্লক হয়েছে। দয়া করে নতুন ট্যাবে (New Tab) অ্যাপটি খুলুন।", true);
       } else if (err.code === "auth/cancelled-popup-request") {
         // Handled silently
       } else if (err.code === "auth/unauthorized-domain") {
-        showToast("This domain needs to be authorized in Firebase Console.", true);
+        showToast("Firebase Console-এ এই ডোমেইনটি Authorized Domains-এ যুক্ত করতে হবে।", true);
       } else {
-        showToast("Sign in failed: " + (err.message || "Please try again"), true);
+        showToast("লগইন ব্যর্থ হয়েছে: নতুন ট্যাবে (New Tab) খুলে চেষ্টা করুন।", true);
       }
     } finally {
       setTimeout(() => {
