@@ -1,12 +1,13 @@
 {
-  "projectId": "singular-weaver-hx4wp",
-  "appId": "1:700297471520:web:53b3bd417fcec642c5fe45",
-  "apiKey": "AIzaSyDeygxYxcj89hqJHj_BfI9NDAUA7fuJark",
-  "projectId": "my-techbox",
+  "apiKey": "AIzaSyBWF8mcIZynDBbYOju0GhwsRCgaK-AGkBI",
   "authDomain": "my-techbox.firebaseapp.com",
+  "projectId": "my-techbox",
+  "storageBucket": "my-techbox.firebasestorage.app",
+  "messagingSenderId": "793514793349",
+  "appId": "1:793514793349:web:298e6eb0c7ca1400da0cec",
+  "measurementId": "G-F5408BSZWK",
+
   "firestoreDatabaseId": "ai-studio-modernblogpostwe-82e57f45-b486-4075-b803-6a766bb9bdab",
-  "storageBucket": "singular-weaver-hx4wp.firebasestorage.app",
-  "messagingSenderId": "700297471520",
   "measurementId": "",
   "oAuthClientId": "700297471520-v6n03le8hlii42u7rsqdnseap15p88su.apps.googleusercontent.com",
   "recaptchaSiteKey": ""
