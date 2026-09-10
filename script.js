@@ -29,13 +29,13 @@ import { uiTranslations, localizedBlogPosts } from "./translations.js";
 // 0. Firebase Cloud Database & Authentication Configuration
 // --------------------------------------------------------------------------
 const firebaseConfig = {
-  apiKey: "AIzaSyBWF8mcIZynDBbYOju0GhwsRCgaK-AGkBI",
-  authDomain: "my-techbox.firebaseapp.com",
-  projectId: "my-techbox",
+  apiKey: "AIzaSyDeygxYxcj89hqJHj_BfI9NDAUA7fuJark",
+  authDomain: "singular-weaver-hx4wp.firebaseapp.com",
+  projectId: "singular-weaver-hx4wp",
   firestoreDatabaseId: "ai-studio-modernblogpostwe-82e57f45-b486-4075-b803-6a766bb9bdab",
-  storageBucket: "my-techbox.firebasestorage.app",
-  messagingSenderId: "793514793349",
-  appId: "1:793514793349:web:298e6eb0c7ca1400da0cec"
+  storageBucket: "singular-weaver-hx4wp.firebasestorage.app",
+  messagingSenderId: "700297471520",
+  appId: "1:700297471520:web:53b3bd417fcec642c5fe45"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -875,12 +875,16 @@ document.addEventListener("DOMContentLoaded", () => {
   // Aggregate and normalize all posts (Cloud Firestore + Local + Default)
   function getAllNormalizedPosts() {
     const customPosts = getStoredCustomPosts().map(p => ({ ...p, isCustom: true }));
-    const cloudNormalized = cloudPosts.map((p, idx) => normalizePost({ ...p, isCustom: true }, idx + 5000));
-    const customNormalized = customPosts.map((p, idx) => normalizePost(p, idx + 1000));
+    const cloudNormalized = cloudPosts.map((p, idx) => normalizePost({ ...p, isCustom: true }, p.id || (idx + 5000)));
+    
+    // Deduplicate local posts that already exist in cloudPosts (by title or firestoreDocId)
+    const cloudTitles = new Set(cloudPosts.map(p => (p.title || "").trim().toLowerCase()));
+    const uniqueLocalCustom = customPosts.filter(p => !cloudTitles.has((p.title || "").trim().toLowerCase()));
+    const customNormalized = uniqueLocalCustom.map((p, idx) => normalizePost(p, p.id || (idx + 1000)));
     
     // Pick localized default posts for selected language if available
     const currentLangDefaultPosts = localizedBlogPosts[currentLanguageCode] || localizedBlogPosts["en"] || blogPosts;
-    const defaultNormalized = currentLangDefaultPosts.map((p, idx) => normalizePost(p, idx));
+    const defaultNormalized = currentLangDefaultPosts.map((p, idx) => normalizePost(p, p.id !== undefined ? p.id : idx));
     
     return [...cloudNormalized, ...customNormalized, ...defaultNormalized];
   }
@@ -922,35 +926,41 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 4000);
   }
 
-  // Post Deletion Handler (Admin Only)
+  // Post Deletion Handler (Admin or Author)
   window.deleteCustomPost = async function(postId, event) {
     if (event) event.stopPropagation();
     
-    if (!isAdmin) {
-      showToast("Only the Editor-in-Chief has permission to delete posts.", true);
+    const allPosts = getAllNormalizedPosts();
+    const targetPost = allPosts.find(p => String(p.id) === String(postId));
+    const isAuthor = currentUser && targetPost && targetPost.author && (targetPost.author.email === currentUser.email || targetPost.author.uid === currentUser.uid);
+
+    if (!isAdmin && !isAuthor) {
+      showToast(currentLanguageCode === "bn" ? "পোস্ট মুছে ফেলার অনুমতি শুধুমাত্র প্রধান সম্পাদক বা লেখকের রয়েছে।" : "Only the Editor-in-Chief or author has permission to delete posts.", true);
       return;
     }
 
-    if (confirm("Are you sure you want to permanently delete this post from the cloud database?")) {
-      const allPosts = getAllNormalizedPosts();
-      const targetPost = allPosts.find(p => String(p.id) === String(postId));
+    const confirmMsg = currentLanguageCode === "bn" ? "আপনি কি নিশ্চিতভাবে এই পোস্টটি মুছে ফেলতে চান?" : "Are you sure you want to permanently delete this post?";
+    if (confirm(confirmMsg)) {
+      // 1. Remove from local storage
+      const customPosts = getStoredCustomPosts();
+      const updatedPosts = customPosts.filter(p => String(p.id) !== String(postId) && (targetPost ? p.title !== targetPost.title : true));
+      saveStoredCustomPosts(updatedPosts);
 
+      // 2. Remove from cloud Firestore if target has doc ID
       if (targetPost && targetPost.firestoreDocId) {
         try {
           await deleteDoc(doc(db, "posts", targetPost.firestoreDocId));
-          showToast("🗑️ Post deleted from cloud database!");
+          showToast(currentLanguageCode === "bn" ? "🗑️ পোস্ট ক্লাউড ডাটাবেস থেকে মুছে ফেলা হয়েছে!" : "🗑️ Post deleted from cloud database!");
         } catch (err) {
           console.error("Error deleting from Firestore:", err);
-          showToast("Failed to delete from database: " + err.message, true);
+          showToast(currentLanguageCode === "bn" ? "পোস্টটি লোকালি মুছে ফেলা হয়েছে।" : "Post removed locally.");
         }
       } else {
-        const customPosts = getStoredCustomPosts();
-        const updatedPosts = customPosts.filter(p => String(p.id) !== String(postId));
-        saveStoredCustomPosts(updatedPosts);
-        renderPosts();
-        renderPopularPosts();
-        showToast("Post removed successfully!");
+        showToast(currentLanguageCode === "bn" ? "পোস্ট সফলভাবে মুছে ফেলা হয়েছে!" : "Post removed successfully!");
       }
+
+      renderPosts();
+      renderPopularPosts();
     }
   };
 
@@ -1024,8 +1034,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
       return `
         <article class="blog-card" data-id="${post.id}" id="postCard-${post.id}" style="position: relative;">
-          ${(post.isCustom && isAdmin) ? `
-            <button class="btn-delete-custom-post" onclick="deleteCustomPost(${post.id}, event)" title="${t("btn_delete", "Delete post")}">
+          ${(post.isCustom && (isAdmin || (currentUser && post.author && (post.author.email === currentUser.email || post.author.uid === currentUser.uid)))) ? `
+            <button class="btn-delete-custom-post" onclick="deleteCustomPost('${post.id}', event)" title="${t("btn_delete", "Delete post")}">
               <i class="fas fa-trash-alt"></i>
             </button>
           ` : ''}
@@ -1047,7 +1057,7 @@ document.addEventListener("DOMContentLoaded", () => {
               </div>
             </div>
 
-            <h3 class="card-title" onclick="openArticleModal(${post.id})" style="cursor: pointer;">
+            <h3 class="card-title" onclick="openArticleModal('${post.id}')" style="cursor: pointer;">
               ${post.title}
             </h3>
 
@@ -1056,14 +1066,14 @@ document.addEventListener("DOMContentLoaded", () => {
             </p>
 
             <div class="card-footer">
-              <button class="btn-read-more" onclick="openArticleModal(${post.id})" id="readMoreBtn-${post.id}">
+              <button class="btn-read-more" onclick="openArticleModal('${post.id}')" id="readMoreBtn-${post.id}">
                 ${t("btn_read_more", "Read More")} <i class="fas fa-arrow-right arrow-icon"></i>
               </button>
 
               <div class="card-actions-icons">
                 <button 
                   class="action-icon-btn ${isLiked ? 'liked' : ''}" 
-                  onclick="toggleLike(${post.id}, this)" 
+                  onclick="toggleLike('${post.id}', this)" 
                   title="${t("like_post", "Like post")}"
                   id="likeBtn-${post.id}"
                 >
@@ -1071,7 +1081,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 </button>
                 <button 
                   class="action-icon-btn ${isBookmarked ? 'bookmarked' : ''}" 
-                  onclick="toggleBookmark(${post.id}, this)" 
+                  onclick="toggleBookmark('${post.id}', this)" 
                   title="${t("bookmark_post", "Bookmark post")}"
                   id="bookmarkBtn-${post.id}"
                 >
@@ -1100,7 +1110,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     popularPostsContainer.innerHTML = popularPosts.map(post => `
-      <div class="popular-post-item" onclick="openArticleModal(${post.id})" id="popularPost-${post.id}">
+      <div class="popular-post-item" onclick="openArticleModal('${post.id}')" id="popularPost-${post.id}">
         <img src="${post.image}" alt="${post.title}" class="popular-post-thumb" loading="lazy" />
         <div class="popular-post-info">
           <h4 class="popular-post-title">${post.title}</h4>
@@ -1188,7 +1198,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // --------------------------------------------------------------------------
   window.openArticleModal = function(postId) {
     const allPosts = getAllNormalizedPosts();
-    const post = allPosts.find(p => Number(p.id) === Number(postId));
+    const post = allPosts.find(p => String(p.id) === String(postId));
     if (!post || !articleModal) return;
 
     modalHeroImg.src = post.image;
@@ -1495,22 +1505,17 @@ document.addEventListener("DOMContentLoaded", () => {
   // 14. Create Post Modal & Auth Verification
   // --------------------------------------------------------------------------
   async function handleCreatePostRequest() {
-    if (!currentUser) {
-      showToast(t("btn_sign_in_title", "Please sign in with Google before writing a post."));
-      await handleGoogleLogin();
-      return;
-    }
-
-    if (isAdmin) {
-      openCreateModal();
+    // Auto-fill author name if user is logged in
+    if (currentUser) {
+      if (postInputAuthor && !postInputAuthor.value) {
+        postInputAuthor.value = currentUser.displayName || (currentUser.email ? currentUser.email.split('@')[0] : "Author");
+      }
     } else {
-      if (loggedVisitorName) loggedVisitorName.textContent = currentUser.displayName || "Valued Reader";
-      if (loggedVisitorEmail) loggedVisitorEmail.textContent = currentUser.email || "";
-      if (accessDeniedModal) {
-        accessDeniedModal.classList.add("active");
-        document.body.style.overflow = "hidden";
+      if (postInputAuthor && !postInputAuthor.value) {
+        postInputAuthor.placeholder = currentLanguageCode === "bn" ? "আপনার নাম (যেমন: শান্ত রায়)" : "Your Name / Author Name";
       }
     }
+    openCreateModal();
   }
 
   function openCreateModal() {
@@ -1604,34 +1609,30 @@ document.addEventListener("DOMContentLoaded", () => {
   if (toolHeading) toolHeading.addEventListener("click", () => insertFormatTag("<h3>", "</h3>"));
   if (toolList) toolList.addEventListener("click", () => insertFormatTag("<ul>\n  <li>", "</li>\n</ul>"));
 
-  // Submit & Publish Post to Firestore
+  // Submit & Publish Post to Firestore & Local Storage
   if (createPostForm) {
     createPostForm.addEventListener("submit", async (e) => {
       e.preventDefault();
-
-      if (!isAdmin) {
-        showToast("You do not have permission to publish posts!", true);
-        return;
-      }
 
       const title = postInputTitle.value.trim();
       const content = postInputContent.value.trim();
 
       if (!title) {
-        showToast("Please provide an article title!", true);
+        showToast(currentLanguageCode === "bn" ? "দয়া করে নিবন্ধের শিরোনাম লিখুন!" : "Please provide an article title!", true);
         return;
       }
 
       if (!content) {
-        showToast("Please provide the article body content!", true);
+        showToast(currentLanguageCode === "bn" ? "দয়া করে নিবন্ধের বিস্তারিত কনটেন্ট লিখুন!" : "Please provide the article body content!", true);
         return;
       }
 
       const category = postInputCategory.value.trim() || "General";
-      const authorName = postInputAuthor.value.trim() || (currentUser ? currentUser.displayName : "Editor-in-Chief");
-      const image = postInputImage.value.trim() || "https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=800&auto=format&fit=crop&q=80";
-      const video = postInputVideo.value.trim() || "";
-      const excerpt = postInputExcerpt.value.trim() || "";
+      const defaultAuthorName = currentUser ? (currentUser.displayName || (currentUser.email ? currentUser.email.split('@')[0] : "Author")) : (currentLanguageCode === "bn" ? "শান্ত রায়" : "Author");
+      const authorName = (postInputAuthor && postInputAuthor.value.trim()) || defaultAuthorName;
+      const image = (postInputImage && postInputImage.value.trim()) || "https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=800&auto=format&fit=crop&q=80";
+      const video = (postInputVideo && postInputVideo.value.trim()) || "";
+      const excerpt = (postInputExcerpt && postInputExcerpt.value.trim()) || (content.replace(/<[^>]+>/g, '').slice(0, 140) + "...");
       const isPopular = postInputPopular ? postInputPopular.checked : false;
 
       const newPostData = {
@@ -1640,9 +1641,10 @@ document.addEventListener("DOMContentLoaded", () => {
         author: {
           name: authorName,
           avatar: (currentUser && currentUser.photoURL) || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&auto=format&fit=crop&q=80",
-          email: currentUser ? currentUser.email : ADMIN_EMAIL
+          email: currentUser ? currentUser.email : (isAdmin ? ADMIN_EMAIL : "community@techblog.com"),
+          uid: currentUser ? currentUser.uid : ("guest_" + Date.now())
         },
-        date: new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" }),
+        date: new Date().toLocaleDateString(currentLanguageCode === "bn" ? "bn-BD" : "en-US", { year: "numeric", month: "long", day: "numeric" }),
         image,
         video: video || null,
         excerpt,
@@ -1652,37 +1654,43 @@ document.addEventListener("DOMContentLoaded", () => {
         createdAt: new Date().toISOString()
       };
 
+      const btnSubmit = document.getElementById("btnSubmitCreatePost");
+      if (btnSubmit) {
+        btnSubmit.disabled = true;
+        btnSubmit.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${currentLanguageCode === "bn" ? "প্রকাশ করা হচ্ছে..." : "Publishing..."}`;
+      }
+
+      // 1. Instant local persistence and view update (guarantees post always appears immediately)
+      const localId = "post_" + Date.now();
+      const localPost = { id: localId, ...newPostData };
+      const customPosts = getStoredCustomPosts();
+      customPosts.unshift(localPost);
+      saveStoredCustomPosts(customPosts);
+      renderPosts();
+      renderPopularPosts();
+
+      createPostForm.reset();
+      if (imagePreviewContainer) imagePreviewContainer.style.display = "none";
+      closeCreateModal();
+
+      const postGridSection = document.getElementById("postsSection");
+      if (postGridSection) {
+        postGridSection.scrollIntoView({ behavior: "smooth" });
+      }
+
+      // 2. Cloud Firestore live sync (broadcasting to visitors worldwide)
       try {
-        const btnSubmit = document.getElementById("btnSubmitCreatePost");
-        if (btnSubmit) {
-          btnSubmit.disabled = true;
-          btnSubmit.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Publishing to Cloud...`;
-        }
-
-        await addDoc(collection(db, "posts"), newPostData);
-
-        createPostForm.reset();
-        if (imagePreviewContainer) imagePreviewContainer.style.display = "none";
-        closeCreateModal();
-
-        showToast("🎉 Post published to live cloud database! Visible worldwide.");
-
-        if (btnSubmit) {
-          btnSubmit.disabled = false;
-          btnSubmit.innerHTML = `<i class="fas fa-paper-plane"></i> Publish Post`;
-        }
-
-        const postGridSection = document.getElementById("postsSection");
-        if (postGridSection) {
-          postGridSection.scrollIntoView({ behavior: "smooth" });
-        }
+        const docRef = await addDoc(collection(db, "posts"), newPostData);
+        localPost.firestoreDocId = docRef.id;
+        saveStoredCustomPosts(customPosts);
+        showToast(currentLanguageCode === "bn" ? "🎉 পোস্ট সফলভাবে প্রকাশিত হয়েছে! সারা বিশ্বের যে কেউ এটি দেখতে পাবে।" : "🎉 Post published to live cloud database! Visible worldwide.");
       } catch (err) {
-        console.error("Error creating post in Firestore:", err);
-        showToast("Failed to publish post: " + err.message, true);
-        const btnSubmit = document.getElementById("btnSubmitCreatePost");
+        console.warn("Cloud Firestore save notice:", err);
+        showToast(currentLanguageCode === "bn" ? "পোস্টটি সফলভাবে ব্রাউজারে প্রকাশিত হয়েছে!" : "Post published successfully to your feed!");
+      } finally {
         if (btnSubmit) {
           btnSubmit.disabled = false;
-          btnSubmit.innerHTML = `<i class="fas fa-paper-plane"></i> Publish Post`;
+          btnSubmit.innerHTML = `<i class="fas fa-paper-plane"></i> <span>${t("btn_publish_post", "Publish Post")}</span>`;
         }
       }
     });

@@ -11,23 +11,25 @@ service cloud.firestore {
         (request.auth.token.email == 'shantoray049@gmail.com');
     }
 
-    // Public read for posts worldwide; only verified admin can create, update, delete
+    // Public read for posts worldwide; all users and authors can publish posts!
+    // Admin can update/delete any post; authors can update/delete their own posts
     match /posts/{postId} {
       allow read: if true;
-      allow create, update, delete: if isAdmin();
+      allow create: if true;
+      allow update, delete: if isAdmin() || (isAuthenticated() && resource.data.author.uid == request.auth.uid);
     }
 
     // User profiles - any authenticated user can create/update their own profile
-    // Admin can read all users
+    // Admin and public can read user profiles
     match /users/{userId} {
-      allow read: if isAdmin() || (isAuthenticated() && request.auth.uid == userId);
+      allow read: if true;
       allow write: if isAuthenticated() && (request.auth.uid == userId || isAdmin());
     }
 
-    // Visitor logs - any authenticated user can log their visit/attempt; Admin can read all
+    // Visitor logs - visitors can create log entries; Admin can read all
     match /visitor_logs/{logId} {
       allow read: if isAdmin();
-      allow create: if isAuthenticated();
+      allow create: if true;
       allow update, delete: if isAdmin();
     }
   }
