@@ -393,13 +393,13 @@ document.addEventListener("DOMContentLoaded", () => {
     document.documentElement.dir = isRtl ? "rtl" : "ltr";
 
     // Update page meta title
-    const metaTitle = t("meta_title", "TechBlog - Modern Tech, Design & Web Development Journal");
+    const metaTitle = t("meta_title", "TechBox - Modern Tech, Design & Web Development Journal");
     if (metaTitle) {
       document.title = metaTitle;
     }
 
     // Direct logo branding replacement across header and footer
-    const brandLogoHtml = t("brand_logo_text", "Tech<span>Blog</span>");
+    const brandLogoHtml = t("brand_logo_text", "Tech<span>Box</span>");
     const logoElements = document.querySelectorAll(".logo-text, [data-i18n='brand_logo_text']");
     logoElements.forEach(el => {
       el.innerHTML = brandLogoHtml;
@@ -1684,7 +1684,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const docRef = await addDoc(collection(db, "posts"), newPostData);
         localPost.firestoreDocId = docRef.id;
         saveStoredCustomPosts(customPosts);
-        showToast(currentLanguageCode === "bn" ? "🎉 পোস্ট সফলভাবে প্রকাশিত হয়েছে! সারা বিশ্বের যে কেউ এটি দেখতে পাবে।" : "🎉 Post published to live cloud database! Visible worldwide.");
+        showToast(currentLanguageCode === "bn" ? "🎉 পোস্ট সফলভাবে প্রকাশিত হয়েছে!" : "🎉 Post published to live cloud database! Visible worldwide.");
       } catch (err) {
         console.warn("Cloud Firestore save notice:", err);
         showToast(currentLanguageCode === "bn" ? "পোস্টটি সফলভাবে ব্রাউজারে প্রকাশিত হয়েছে!" : "Post published successfully to your feed!");
