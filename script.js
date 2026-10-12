@@ -202,7 +202,42 @@ const blogPosts = [
     `,
     tags: ["Career", "Roadmap", "Tutorial", "WebDev"],
     isPopular: true
+  },
+  {
+    id: 7,
+    title: "Big Ster",
+    category: "inform",
+    author: {
+      name: "mia",
+      avatar: "https://www.pinterest.com/pin/pinterest--186336503311728055/"
+    },
+    date: "12, 2026",
+    readTime: "few min read",
+    image: "https://www.marca.com/en/lifestyle/album/2020/01/02/5e0e06a546163f2a0b8b45ed_6.html",
+    excerpt: "From semantic HTML5 and modern CSS Grid to vanilla JavaScript, state management, and Git collaboration—a comprehensive guide to launching your engineering career.",
+    content: `
+      <p>Many aspiring developers jump directly into heavy frameworks and feel overwhelmed. The most sustainable learning path is built on steady progression:</p>
+      <ol style="margin-left: 1.5rem; margin-bottom: 1rem; line-height: 1.8;">
+        <li>Semantic HTML5, Web Accessibility (ARIA), and SEO basics.</li>
+        <li>CSS3 Flexbox, Grid, keyframe animations, and responsive layout patterns.</li>
+        <li>Vanilla JavaScript DOM manipulation, Fetch API, and modern ES6+ features.</li>
+        <li>Git version control, collaborative workflows, and live deployment platforms.</li>
+      </ol>
+      <blockquote>"Consistency in writing code every single day transforms beginners into master craftspeople."</blockquote>
+    `,
+    tags: ["Career", "Roadmap", "Tutorial", "WebDev"],
+    isPopular: true
   }
+
+
+
+
+
+
+
+
+
+  
 ];
 
 // --------------------------------------------------------------------------
