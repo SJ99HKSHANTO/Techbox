@@ -151,7 +151,7 @@ export const localizedBlogPosts = {
       "isPopular": true
     },
 {
-      "id": 01,
+      "id": 8,
       "title": "Applications with Video",
       "category": "xx",
       "author": {
