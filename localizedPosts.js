@@ -149,7 +149,32 @@ export const localizedBlogPosts = {
         "WebDev"
       ],
       "isPopular": true
-    }
+    },
+{
+      "id": 01,
+      "title": "Applications with Video",
+      "category": "xx",
+      "author": {
+        "name": "miax",
+        "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80"
+      },
+      "date": "14",
+      "readTime": "",
+      "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTtmFAqEHIR-lLmbjimOFOyhkkMGsQ8JPvRF40ArERnTg&s=10",
+      "video": "https://www.youtube.com/watch?v=UM7XQO_cK9Q",
+      "excerpt": "Writing and formatting blog posts in this platform is effortless. You can write in regular paragraphs without writing a single line of complex code.",
+      "content": "<p>How to Understand English Without Translation | Think in English & Improve Your Listening Skills</p><p></p><p></p>",
+      "tags": [
+        "T",
+        "",
+        "Video"
+      ],
+      "isPopular": true
+        },
+
+
+
+    
   ],
   "bn": [
     {
